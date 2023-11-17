@@ -3,7 +3,7 @@
     "incremental": true,
     "outDir": "./build",
     // "declarationDir": "./build",
-    "module": "commonjs",
+    "module": "nodenext",
     "esModuleInterop": true,
     "target": "esnext",
     // "declaration": true,
@@ -12,7 +12,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@vk": ["./lib/vk/index"],
-      "@events": ["./lib/events"]
+      "@events": ["./lib/events"],
+      "@user": ["./lib/user"]
     },
     "alwaysStrict": true,
     "strict": true

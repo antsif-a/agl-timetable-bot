@@ -12,11 +12,12 @@
   "private": true,
   "scripts": {
     "prestart": "tsc",
-    "start": "env $(grep -v '^#' .env | xargs) node --trace-deprecation -r tsconfig-paths/register ./build/src/index.js",
+    "start": "env $(grep -v '^#' .env | xargs) node -r tsconfig-paths/register ./build/src/index.js",
     "build": "tsc"
   },
   "dependencies": {
     "@prisma/client": "^5.5.2",
+    "axios": "^1.6.2",
     "chalk": "4.0.0",
     "grammy": "^1.19.1",
     "node-vk-sdk": "^1.1.7"

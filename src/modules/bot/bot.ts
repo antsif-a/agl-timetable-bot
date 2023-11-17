@@ -1,8 +1,10 @@
+import { Buffer } from 'node:buffer';
+import axios from 'axios';
 import { ApplicationEvents, ApplicationModule } from '@/application';
-import { Bot as GrammyBot } from 'grammy';
+import { Bot as GrammyBot, InputFile } from 'grammy';
 import { PrismaClient } from '@prisma/client';
 import { CommandsHandler } from '@/modules/bot/commands-handler';
-import type { UserFromGetMe } from 'grammy/out/types';
+import type { UserFromGetMe } from '@user';
 import { VKApi } from 'node-vk-sdk';
 import { EventHandler } from '@events';
 import {
@@ -63,17 +65,22 @@ export default class Bot implements ApplicationModule {
             .map((a: WallWallpostAttachment) =>
                 findLargestPhotoSize(a.photo).url);
 
-        // check to avoid unnecessary loops
-        if (text || photoUrls.length > 0) {
+        if (photoUrls.length > 0) {
+            for (const photoUrl of photoUrls) {
+                const image = new InputFile(() =>
+                    axios.get(photoUrl, {
+                        responseType: 'arraybuffer'
+                    }).then((res) => res.data as Buffer));
+
+                for (const userChatId of userChatIds) {
+                    await this.bot.api.sendPhoto(userChatId, image);
+                }
+            }
+        }
+
+        if (text) {
             for (const userChatId of userChatIds) {
-                if (photoUrls.length > 0) {
-                    for (const photoUrl of photoUrls) {
-                        await this.bot.api.sendPhoto(userChatId, photoUrl);
-                    }
-                }
-                if (text) {
-                    await this.bot.api.sendMessage(userChatId, text);
-                }
+                await this.bot.api.sendMessage(userChatId, text);
             }
         }
     }
