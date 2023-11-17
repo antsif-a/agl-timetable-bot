@@ -3,6 +3,8 @@ import Logger from '@/modules/logging/logger';
 import Bot from '@/modules/bot/bot';
 import VkBridge from '@/modules/api/vkBridge';
 import { exit, env } from 'node:process';
+import process from 'process';
+import * as util from 'node:util';
 
 declare global {
     namespace NodeJS {
@@ -28,17 +30,24 @@ const {
 const VK_COMMUNITY_ID = Number.parseInt(env.VK_COMMUNITY_ID);
 const VK_TEST_COMMUNITY_ID = Number.parseInt(env.VK_TEST_COMMUNITY_ID);
 
+const logger = Logger.create('process');
+process.on('warning', (warning) => logger.warn(warning.toString()));
+process.on('uncaughtException', (error) => {
+    logger.error(util.inspect(error));
+    exit(1);
+})
+
 const app = new Application()
     // every module can access app's events and set listeners
-    .addModule(Logger.create())
+    .addModule(Logger.create('app'))
     .addModule(VkBridge.create(VK_TEST_COMMUNITY_ACCESS_TOKEN, VK_TEST_COMMUNITY_ID))
     .addModule(Bot.create(TELEGRAM_BOT_TOKEN, VK_USER_ACCESS_TOKEN))
     // synchronous calls
     .init();
 
 // immediately exit on error
-app.events.on('app:error', () => exit());
+app.events.on('app:error', () => exit(1));
 
 // asynchronous calls
 app.start()
-    .catch((e) => app.events.emit('app:error', new Error(e)))
+.catch((e) => app.events.emit('app:error', new Error(e)));

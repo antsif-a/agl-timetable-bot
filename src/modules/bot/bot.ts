@@ -2,9 +2,9 @@ import { Buffer } from 'node:buffer';
 import axios from 'axios';
 import { ApplicationEvents, ApplicationModule } from '@/application';
 import { Bot as GrammyBot, InputFile } from 'grammy';
+import { UserFromGetMe } from 'grammy/types';
 import { PrismaClient } from '@prisma/client';
 import { CommandsHandler } from '@/modules/bot/commands-handler';
-import type { UserFromGetMe } from '@user';
 import { VKApi } from 'node-vk-sdk';
 import { EventHandler } from '@events';
 import {
@@ -42,6 +42,13 @@ export default class Bot implements ApplicationModule {
     }
 
     init(events: EventHandler<ApplicationEvents>) {
+        this.bot.use((ctx, next) => {
+            if (ctx.message) {
+                events.emit('bot:message', ctx.message, ctx.message.from!);
+            }
+            next();
+        });
+
         this.onStart =
             (botInfo) => events.emit('bot:start', botInfo);
 

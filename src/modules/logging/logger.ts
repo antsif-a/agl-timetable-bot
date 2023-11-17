@@ -1,13 +1,28 @@
+import chalk from 'chalk';
 import { UserFromGetMe } from 'grammy/types';
 import { ApplicationEvents, ApplicationModule } from '@/application';
 import { EventHandler } from '@events';
-import chalk from 'chalk';
+
+export enum LogLevel {
+    debug,
+    info,
+    warn,
+    error,
+}
 
 export default class Logger implements ApplicationModule {
-    private constructor() {}
+    private static loggerCount = 0;
 
-    static create() {
-        return new Logger();
+    private constructor(
+        private name: string,
+    ) {}
+
+    static create(name?: string) {
+        if (!name) {
+            name = this.loggerCount.toString();
+            this.loggerCount++;
+        }
+        return new Logger(name);
     }
 
     init(events: EventHandler<ApplicationEvents>) {
@@ -15,6 +30,12 @@ export default class Logger implements ApplicationModule {
             this.info(
                 `Bot ${info.first_name} (${info.username}) is online! ID: ${info.id}`,
             );
+        });
+
+        events.on('bot:message',
+            ({ text }, { username, first_name, last_name }) => {
+            const fullName = last_name ? `${first_name} ${last_name}` : first_name;
+            this.debug(`Message from ${username} (${fullName}): ${text}`);
         });
 
         events.on('vk:start', () => {
@@ -30,11 +51,31 @@ export default class Logger implements ApplicationModule {
         });
     }
 
-    private info(message: string) {
-        console.info(chalk.blue('[I]') + ` ${message}`);
+    debug(message: string) {
+        this.log(message, LogLevel.debug);
     }
 
-    private error(message: string) {
-        console.info(chalk.red('[E]') + ` ${message}`);
+    warn(message: string) {
+        this.log(message, LogLevel.warn);
+    }
+
+    info(message: string) {
+        this.log(message, LogLevel.info)
+    }
+
+    error(message: string) {
+        this.log(message, LogLevel.error);
+    }
+
+    private log(message: string, level: LogLevel) {
+        const prefix =
+            level == LogLevel.debug ? chalk.gray('[D]') :
+                    level == LogLevel.info ? chalk.blue('[I]') :
+                        level == LogLevel.warn ? chalk.yellow('[W]') :
+                            level == LogLevel.error ? chalk.red('[E]') : null;
+
+        const date = new Date().toLocaleString();
+
+        console.log(`${this.name}\t- ${chalk.dim.underline(date)} ${prefix} ${message}`);
     }
 }

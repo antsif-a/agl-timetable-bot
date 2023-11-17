@@ -1,10 +1,11 @@
 import { EventEmitter } from 'node:events';
-import { UserFromGetMe } from 'grammy/types';
+import { Message, User, UserFromGetMe } from 'grammy/types';
 import { EventHandler, EventMap } from '@events';
 import { WallWallpostFull } from 'node-vk-sdk/distr/src/generated/Models';
 
 export interface ApplicationEvents extends EventMap {
     ['bot:start']: (botInfo: UserFromGetMe) => void;
+    ['bot:message']: (message: Message, user: User) => void;
 
     ['vk:start']: () => void;
     ['vk:post']: (wallItem: WallWallpostFull) => void;
