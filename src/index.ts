@@ -1,10 +1,8 @@
+import { env } from 'node:process';
 import { Application } from '@/application';
 import Logger from '@/modules/logging/logger';
 import Bot from '@/modules/bot/bot';
 import VkBridge from '@/modules/api/vkBridge';
-import { exit, env } from 'node:process';
-import process from 'process';
-import * as util from 'node:util';
 
 declare global {
     namespace NodeJS {
@@ -13,9 +11,7 @@ declare global {
             DATABASE_URL: string;
             TELEGRAM_BOT_TOKEN: string;
             VK_COMMUNITY_ACCESS_TOKEN: string;
-            VK_TEST_COMMUNITY_ACCESS_TOKEN: string;
             VK_COMMUNITY_ID: string;
-            VK_TEST_COMMUNITY_ID: string;
             VK_USER_ACCESS_TOKEN: string;
         }
     }
@@ -24,30 +20,21 @@ declare global {
 const {
     VK_USER_ACCESS_TOKEN,
     VK_COMMUNITY_ACCESS_TOKEN,
-    VK_TEST_COMMUNITY_ACCESS_TOKEN,
     TELEGRAM_BOT_TOKEN,
 } = env;
 const VK_COMMUNITY_ID = Number.parseInt(env.VK_COMMUNITY_ID);
-const VK_TEST_COMMUNITY_ID = Number.parseInt(env.VK_TEST_COMMUNITY_ID);
-
-const logger = Logger.create('process');
-process.on('warning', (warning) => logger.warn(warning.toString()));
-process.on('uncaughtException', (error) => {
-    logger.error(util.inspect(error));
-    exit(1);
-})
 
 const app = new Application()
     // every module can access app's events and set listeners
-    .addModule(Logger.create('app'))
-    .addModule(VkBridge.create(VK_TEST_COMMUNITY_ACCESS_TOKEN, VK_TEST_COMMUNITY_ID))
-    .addModule(Bot.create(TELEGRAM_BOT_TOKEN, VK_USER_ACCESS_TOKEN))
-    // synchronous calls
-    .init();
+    .addModule(Logger.create())
+    .addModule(VkBridge.create(VK_COMMUNITY_ACCESS_TOKEN, VK_COMMUNITY_ID))
+    .addModule(Bot.create(TELEGRAM_BOT_TOKEN, VK_USER_ACCESS_TOKEN));
 
-// immediately exit on error
-app.events.on('app:error', () => exit(1));
+process.on('warning', (warn) => app.events.emit('process:warn', warn));
+
+// synchronous calls
+app.init();
 
 // asynchronous calls
 app.start()
-.catch((e) => app.events.emit('app:error', new Error(e)));
+    .catch((e) => app.events.emit('app:error', e as Error));

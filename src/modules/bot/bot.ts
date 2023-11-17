@@ -1,3 +1,4 @@
+import { exit } from 'node:process';
 import { Buffer } from 'node:buffer';
 import axios from 'axios';
 import { ApplicationEvents, ApplicationModule } from '@/application';
@@ -42,6 +43,9 @@ export default class Bot implements ApplicationModule {
     }
 
     init(events: EventHandler<ApplicationEvents>) {
+        events.on('bot:error', () => exit(1));
+
+        this.bot.catch((error) => events.emit('bot:error', error));
         this.bot.use((ctx, next) => {
             if (ctx.message) {
                 events.emit('bot:message', ctx.message, ctx.message.from!);

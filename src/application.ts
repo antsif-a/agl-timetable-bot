@@ -1,18 +1,23 @@
+import { exit } from 'node:process';
 import { EventEmitter } from 'node:events';
 import { Message, User, UserFromGetMe } from 'grammy/types';
 import { EventHandler, EventMap } from '@events';
 import { WallWallpostFull } from 'node-vk-sdk/distr/src/generated/Models';
+import { BotError } from 'grammy';
 
 export interface ApplicationEvents extends EventMap {
+    ['app:error']: (error: Error) => void;
+
+    ['process:warn']: (warn: Error) => void;
+
     ['bot:start']: (botInfo: UserFromGetMe) => void;
+    ['bot:error']: (error: BotError) => void;
     ['bot:message']: (message: Message, user: User) => void;
 
     ['vk:start']: () => void;
     ['vk:post']: (wallItem: WallWallpostFull) => void;
 
     ['db:start']: () => void;
-
-    ['app:error']: (e: Error) => void;
 }
 
 export interface ApplicationModule {
@@ -37,6 +42,10 @@ export class Application {
         for (const module of this.modules) {
             module.init && module.init(this.events);
         }
+
+        // it's last to allow other modules add their own listeners
+        this.events.on('app:error', () => exit(1));
+
         return this;
     }
 

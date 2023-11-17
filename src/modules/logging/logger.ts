@@ -1,5 +1,5 @@
+import * as util from 'node:util';
 import chalk from 'chalk';
-import { UserFromGetMe } from 'grammy/types';
 import { ApplicationEvents, ApplicationModule } from '@/application';
 import { EventHandler } from '@events';
 
@@ -11,71 +11,77 @@ export enum LogLevel {
 }
 
 export default class Logger implements ApplicationModule {
-    private static loggerCount = 0;
+    private constructor() {
+    }
 
-    private constructor(
-        private name: string,
-    ) {}
-
-    static create(name?: string) {
-        if (!name) {
-            name = this.loggerCount.toString();
-            this.loggerCount++;
-        }
-        return new Logger(name);
+    static create() {
+        return new Logger();
     }
 
     init(events: EventHandler<ApplicationEvents>) {
-        events.on('bot:start', (info: UserFromGetMe) => {
+        events.on('app:error', (error) => {
+            this.error(error, 'app');
+        });
+
+        events.on('bot:error', (error) => {
+            this.error(error, 'bot');
+        });
+
+        events.on('bot:start', (info) => {
             this.info(
                 `Bot ${info.first_name} (${info.username}) is online! ID: ${info.id}`,
+                'bot'
             );
         });
 
         events.on('bot:message',
             ({ text }, { username, first_name, last_name }) => {
             const fullName = last_name ? `${first_name} ${last_name}` : first_name;
-            this.debug(`Message from ${username} (${fullName}): ${text}`);
+            this.debug(`Message from ${username} (${fullName}): ${text}`, 'bot');
         });
 
         events.on('vk:start', () => {
-            this.info('VK bridge set up.');
+            this.info('VK bridge set up.', 'vk');
         });
 
         events.on('db:start', () => {
-            this.info('Connected to database.');
-        });
-
-        events.on('app:error', (e: Error) => {
-            this.error(e.toString());
+            this.info('Connected to database.', 'db');
         });
     }
 
-    debug(message: string) {
-        this.log(message, LogLevel.debug);
+    debug(message: string, scope?: string) {
+        this.log(message, LogLevel.debug, scope);
     }
 
-    warn(message: string) {
-        this.log(message, LogLevel.warn);
+    warn(message: string, scope?: string) {
+        this.log(message, LogLevel.warn, scope);
     }
 
-    info(message: string) {
-        this.log(message, LogLevel.info)
+    info(message: string, scope?: string) {
+        this.log(message, LogLevel.info, scope)
     }
 
-    error(message: string) {
-        this.log(message, LogLevel.error);
+    error(message: string, scope?: string): void;
+    error(error: Error, scope?: string): void;
+    error(error: string | Error, scope?: string) {
+        this.log(
+            error instanceof Error
+                ? util.inspect(error)
+                : error,
+            LogLevel.error,
+            scope,
+        );
     }
 
-    private log(message: string, level: LogLevel) {
+    private log(message: string, level: LogLevel, scope?: string) {
         const prefix =
             level == LogLevel.debug ? chalk.gray('[D]') :
                     level == LogLevel.info ? chalk.blue('[I]') :
                         level == LogLevel.warn ? chalk.yellow('[W]') :
                             level == LogLevel.error ? chalk.red('[E]') : null;
 
-        const date = new Date().toLocaleString();
+        const date = chalk.dim.underline(new Date().toLocaleString());
 
-        console.log(`${this.name}\t- ${chalk.dim.underline(date)} ${prefix} ${message}`);
+        console.log(`${date} (${scope || 'app'})\t${prefix} ${message}`);
     }
 }
