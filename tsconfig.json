@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "outDir": "./build",
+    // "declarationDir": "./build",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "esnext",
+    // "declaration": true,
+    // "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@vk": ["./lib/vk/index"],
+      "@events": ["./lib/events"]
+    },
+    "alwaysStrict": true,
+    "strict": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

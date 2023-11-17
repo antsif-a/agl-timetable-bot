@@ -1,0 +1,31 @@
+{
+  "name": "agl_timetable_bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for my school in Archangelsk",
+  "main": "index.js",
+  "author": {
+    "name": "Andrew Antsiferov",
+    "email": "summet.dev@gmail.com",
+    "url": "https://github.com/antsif-a"
+  },
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "prestart": "tsc",
+    "start": "env $(grep -v '^#' .env | xargs) node --trace-deprecation -r tsconfig-paths/register ./build/src/index.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.5.2",
+    "chalk": "4.0.0",
+    "grammy": "^1.19.1",
+    "node-vk-sdk": "^1.1.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.6",
+    "@types/node-fetch": "^2.6.6",
+    "prisma": "^5.5.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.2.2"
+  }
+}
