@@ -2,7 +2,10 @@ import { exit } from 'node:process';
 import { EventEmitter } from 'node:events';
 import { Message, User, UserFromGetMe } from 'grammy/types';
 import { EventHandler, EventMap } from '@events';
-import { WallWallpostFull } from 'node-vk-sdk/distr/src/generated/Models';
+import {
+    GroupsGroup,
+    WallWallpostFull,
+} from 'node-vk-sdk/distr/src/generated/Models';
 import { BotError } from 'grammy';
 
 export interface ApplicationEvents extends EventMap {
@@ -14,7 +17,7 @@ export interface ApplicationEvents extends EventMap {
     ['bot:error']: (error: BotError) => void;
     ['bot:message']: (message: Message, user: User) => void;
 
-    ['vk:start']: () => void;
+    ['vk:start']: (group: GroupsGroup) => void;
     ['vk:post']: (wallItem: WallWallpostFull) => void;
 
     ['db:start']: () => void;

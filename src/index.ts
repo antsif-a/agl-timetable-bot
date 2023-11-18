@@ -1,8 +1,8 @@
 import { env } from 'node:process';
 import { Application } from '@/application';
 import Logger from '@/modules/logging/logger';
+import VKBridge from '@/modules/api/vkBridge';
 import Bot from '@/modules/bot/bot';
-import VkBridge from '@/modules/api/vkBridge';
 
 declare global {
     namespace NodeJS {
@@ -27,7 +27,7 @@ const VK_COMMUNITY_ID = Number.parseInt(env.VK_COMMUNITY_ID);
 const app = new Application()
     // every module can access app's events and set listeners
     .addModule(Logger.create())
-    .addModule(VkBridge.create(VK_COMMUNITY_ACCESS_TOKEN, VK_COMMUNITY_ID))
+    .addModule(VKBridge.create(VK_COMMUNITY_ACCESS_TOKEN, VK_COMMUNITY_ID))
     .addModule(Bot.create(TELEGRAM_BOT_TOKEN, VK_USER_ACCESS_TOKEN));
 
 process.on('warning', (warn) => app.events.emit('process:warn', warn));

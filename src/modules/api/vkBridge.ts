@@ -1,17 +1,16 @@
 import {
-    Application,
     ApplicationEvents,
     ApplicationModule,
 } from '@/application';
 import { BotsLongPollUpdatesProvider, VKApi } from 'node-vk-sdk';
 import { EventHandler } from '@events';
 
-export default class VkBridge implements ApplicationModule {
+export default class VKBridge implements ApplicationModule {
     private readonly api: VKApi;
     private readonly groupId: number;
     // TODO: Add strong types
     private onUpdate: (update: any) => void = () => {};
-    private onStart: () => void = () => {};
+    private onStart: () => Promise<void> | void = () => {};
 
     private constructor(vkApi: VKApi, groupId: number) {
         this.api = vkApi;
@@ -24,7 +23,7 @@ export default class VkBridge implements ApplicationModule {
             lang: 'ru',
         });
 
-        return new VkBridge(vkApi, groupId);
+        return new VKBridge(vkApi, groupId);
     }
 
     init(events: EventHandler<ApplicationEvents>) {
@@ -34,13 +33,19 @@ export default class VkBridge implements ApplicationModule {
             }
         };
 
-        this.onStart = () => events.emit('vk:start');
+        this.onStart = async () => {
+            await this.api.groupsGetById({
+                group_id: this.groupId.toString(),
+            }).then((groups) => {
+                events.emit('vk:start', groups.at(0)!);
+            });
+        };
     }
 
-    start() {
+    async start() {
         // TODO: write own implementation of long poll api
         new BotsLongPollUpdatesProvider(this.api, this.groupId).getUpdates(
             this.onUpdate);
-        this.onStart();
+        await this.onStart();
     }
 }

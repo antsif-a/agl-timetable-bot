@@ -40,8 +40,8 @@ export default class Logger implements ApplicationModule {
             this.debug(`Message from ${username} (${fullName}): ${text}`, 'bot');
         });
 
-        events.on('vk:start', () => {
-            this.info('VK bridge set up.', 'vk');
+        events.on('vk:start', ({ name, id }) => {
+            this.info(`Started long polling from ${id} (${name}) group`, 'vk');
         });
 
         events.on('db:start', () => {
