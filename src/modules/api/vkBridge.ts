@@ -1,9 +1,10 @@
-import {
+import { BotsLongPollUpdatesProvider, VKApi } from 'node-vk-sdk';
+import type { EventHandler } from '@events';
+
+import type {
     ApplicationEvents,
     ApplicationModule,
 } from '@/application';
-import { BotsLongPollUpdatesProvider, VKApi } from 'node-vk-sdk';
-import { EventHandler } from '@events';
 
 export default class VKBridge implements ApplicationModule {
     private readonly api: VKApi;

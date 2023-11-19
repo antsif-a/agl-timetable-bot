@@ -1,7 +1,8 @@
 import * as util from 'node:util';
 import chalk from 'chalk';
+import type { EventHandler } from '@events';
+
 import { ApplicationEvents, ApplicationModule } from '@/application';
-import { EventHandler } from '@events';
 
 export enum LogLevel {
     debug,

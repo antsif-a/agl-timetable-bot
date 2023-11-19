@@ -1,10 +1,11 @@
-import { Bot as GrammyBot } from 'grammy';
+import type { PrismaClient } from '@prisma/client';
+import type { Bot as GrammyBot } from 'grammy';
 import { VKApi } from 'node-vk-sdk';
+
 import TimetableCommand from '@/modules/bot/commands/timetable';
 import SubscribeCommand from '@/modules/bot/commands/subscribe';
 import UnsubscribeCommand from '@/modules/bot/commands/unsubscribe';
-import { PrismaClient } from '@prisma/client';
-import { BotCommand } from '@/modules/bot/bot-command';
+import type { BotCommand } from '@/modules/bot/bot-command';
 
 export class CommandsHandler {
     private readonly commands: BotCommand[];

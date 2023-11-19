@@ -1,6 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import { Context } from 'grammy';
-import { BotCommand } from '@/modules/bot/bot-command';
+import type { PrismaClient } from '@prisma/client';
+import type { Context } from 'grammy';
+
+import type { BotCommand } from '@/modules/bot/bot-command';
 
 export default class SubscribeCommand implements BotCommand {
     command = 'subscribe';

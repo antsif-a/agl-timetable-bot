@@ -1,21 +1,22 @@
+import type { Buffer } from 'node:buffer';
 import { exit } from 'node:process';
-import { Buffer } from 'node:buffer';
 import axios from 'axios';
-import { ApplicationEvents, ApplicationModule } from '@/application';
-import { Bot as GrammyBot, InputFile } from 'grammy';
-import { UserFromGetMe } from 'grammy/types';
 import { PrismaClient } from '@prisma/client';
-import { CommandsHandler } from '@/modules/bot/commands-handler';
+import { Bot as GrammyBot, InputFile } from 'grammy';
+import type { UserFromGetMe } from 'grammy/types';
 import { VKApi } from 'node-vk-sdk';
-import { EventHandler } from '@events';
-import {
-    PhotosPhoto,
-    PhotosPhotoSizes, WallWallpost,
+import type { EventHandler } from '@events';
+import type {
+    PhotosPhotoSizes,
+    WallWallpostFull,
     WallWallpostAttachment,
-} from 'node-vk-sdk/distr/src/generated/Models';
+} from '@vk';
 
-function findLargestPhotoSize(photo: PhotosPhoto) {
-    return photo.sizes
+import { ApplicationEvents, ApplicationModule } from '@/application';
+import { CommandsHandler } from '@/modules/bot/commands-handler';
+
+function findLargestPhotoSize(sizes: PhotosPhotoSizes[]) {
+    return sizes
         .sort((a: PhotosPhotoSizes, b: PhotosPhotoSizes) => b.width - a.width)
         .at(0)!;
 }
@@ -70,21 +71,25 @@ export default class Bot implements ApplicationModule {
         });
     }
 
-    async sendPostToUsers(post: WallWallpost, userChatIds: number[]) {
-        const { attachments, text } = post;
-        const photoUrls = attachments
-            .map((a: WallWallpostAttachment) =>
-                findLargestPhotoSize(a.photo).url);
+    async sendPostToUsers(
+        { attachments, text }: WallWallpostFull,
+        userChatIds: number[],
+    ) {
+        if (attachments) {
+            const photoUrls = attachments
+                .map((a: WallWallpostAttachment) =>
+                    findLargestPhotoSize(a.photo!.sizes!).url!);
 
-        if (photoUrls.length > 0) {
-            for (const photoUrl of photoUrls) {
-                const image = new InputFile(() =>
-                    axios.get(photoUrl, {
-                        responseType: 'arraybuffer'
-                    }).then((res) => res.data as Buffer));
+            if (photoUrls.length > 0) {
+                for (const photoUrl of photoUrls) {
+                    const image = new InputFile(() =>
+                        axios.get(photoUrl, {
+                            responseType: 'arraybuffer'
+                        }).then((res) => res.data as Buffer));
 
-                for (const userChatId of userChatIds) {
-                    await this.bot.api.sendPhoto(userChatId, image);
+                    for (const userChatId of userChatIds) {
+                        await this.bot.api.sendPhoto(userChatId, image);
+                    }
                 }
             }
         }

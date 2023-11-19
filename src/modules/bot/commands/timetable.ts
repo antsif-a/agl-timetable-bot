@@ -1,15 +1,16 @@
-import { VKApi } from 'node-vk-sdk';
+import type { Buffer } from 'node:buffer';
+import axios from 'axios';
+import type { VKApi } from 'node-vk-sdk';
 import { Context, InputFile } from 'grammy';
-import { BotCommand } from '@/modules/bot/bot-command';
-import {
+import type {
     PhotosPhoto,
     PhotosPhotoSizes,
-} from 'node-vk-sdk/distr/src/generated/Models';
-import axios from 'axios';
-import { Buffer } from 'node:buffer';
+} from '@vk';
+
+import { BotCommand } from '@/modules/bot/bot-command';
 
 function findLargestPhotoSize(photo: PhotosPhoto) {
-    return photo.sizes
+    return photo.sizes!
     .sort((a: PhotosPhotoSizes, b: PhotosPhotoSizes) => b.width - a.width)
     .at(0)!;
 }
@@ -35,8 +36,9 @@ export default class TimetableCommand implements BotCommand {
             return ctx.reply('Расписаний нет.');
         }
 
+        // TODO: add checks instead of !'s
         for (const attachment of latestWall.attachments) {
-            const photoUrl = findLargestPhotoSize(attachment.photo).url;
+            const photoUrl = findLargestPhotoSize(attachment.photo as PhotosPhoto).url!;
             const image = new InputFile(() =>
                 axios.get(photoUrl, {
                     responseType: 'arraybuffer'

@@ -2,18 +2,14 @@
   "compilerOptions": {
     "incremental": true,
     "outDir": "./build",
-    // "declarationDir": "./build",
     "module": "nodenext",
-    "esModuleInterop": true,
     "target": "esnext",
-    // "declaration": true,
-    // "sourceMap": true,
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@vk": ["./lib/vk/index"],
       "@events": ["./lib/events"],
-      "@user": ["./lib/user"]
     },
     "alwaysStrict": true,
     "strict": true

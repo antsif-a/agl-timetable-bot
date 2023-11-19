@@ -1,12 +1,9 @@
 import { exit } from 'node:process';
 import { EventEmitter } from 'node:events';
-import { Message, User, UserFromGetMe } from 'grammy/types';
-import { EventHandler, EventMap } from '@events';
-import {
-    GroupsGroup,
-    WallWallpostFull,
-} from 'node-vk-sdk/distr/src/generated/Models';
-import { BotError } from 'grammy';
+import type { BotError } from 'grammy';
+import type { Message, User, UserFromGetMe } from 'grammy/types';
+import type { EventHandler, EventMap } from '@events';
+import type { GroupsGroup, WallWallpostFull } from '@vk';
 
 export interface ApplicationEvents extends EventMap {
     ['app:error']: (error: Error) => void;
