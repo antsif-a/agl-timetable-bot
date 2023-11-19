@@ -30,7 +30,6 @@ export interface ApplicationModule {
 }
 
 export class Application {
-    // @ts-ignore TODO: make EventHandler resolve to EventEmitter correctly
     readonly #events: EventHandler<ApplicationEvents>
         = new EventEmitter();
 

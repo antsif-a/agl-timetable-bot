@@ -12,11 +12,15 @@ export interface EventHandler<Events extends EventMap> {
     removeAllListeners(event?: keyof Events): this;
     removeListener(event: keyof Events, listener: Events[keyof Events]): this;
 
-    emit<E extends keyof Events>(
-        event: E, ...args: Parameters<Events[E]>): boolean;
+    emit(
+        event: keyof Events, ...args: Parameters<Events[keyof Events]>): boolean;
     eventNames(): (keyof Events)[];
-    rawListeners(event: keyof Events): Events[keyof Events][];
-    listeners(event: keyof Events): Events[keyof Events][];
+    /*
+    * using Function here because typescript can't
+    * resolve (...args: any[]) => void to Function
+    */
+    rawListeners(event: keyof Events): Function[];
+    listeners(event: keyof Events): Function[];
     listenerCount(event: keyof Events): number;
 
     getMaxListeners(): number;
