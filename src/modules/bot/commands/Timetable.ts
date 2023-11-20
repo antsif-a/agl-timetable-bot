@@ -19,12 +19,14 @@ export default class TimetableCommand implements BotCommand {
     command = 'latest';
     description = 'Отправляет последнее расписание';
 
-    constructor(
-        private apiClient: VKApi,
-    ) {}
+    readonly #apiClient: VKApi;
+
+    constructor(apiClient: VKApi) {
+        this.#apiClient = apiClient;
+    }
 
     async action(ctx: Context) {
-        const wall = await this.apiClient.wallGet({
+        const wall = await this.#apiClient.wallGet({
             domain: 'ulg_timetable',
             // owner_id: '-222994531',
             count: 1,

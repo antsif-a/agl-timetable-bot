@@ -22,9 +22,6 @@ export class CommandsHandler {
         this.commands.forEach(
             (c) => bot.command(c.command, (ctx) => c.action(ctx)));
 
-        await bot.api.setMyCommands(
-            this.commands.map(({ command, description }) => {
-                return { command, description };
-            }));
+        await bot.api.setMyCommands(this.commands);
     }
 }
