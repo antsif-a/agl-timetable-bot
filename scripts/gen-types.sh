@@ -20,3 +20,5 @@ cd "$VK_API_REPOSITORY"
     --schemaDir "$VK_API_SCHEMA_DIR" \
     --outDir "$OUT_DIR" \
     --methods '*'
+
+rm -rf "$VK_API_SCHEMA_DIR"
