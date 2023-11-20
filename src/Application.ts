@@ -27,6 +27,11 @@ export interface ApplicationModule {
 }
 
 export class Application {
+    private readonly state = {
+        initialized: false,
+        started: false,
+    };
+
     readonly #events: EventHandler<ApplicationEvents>
         = new EventEmitter();
 
@@ -38,20 +43,32 @@ export class Application {
     }
 
     init() {
+        if (this.state.initialized) {
+            throw new Error('Application is already initialized.');
+        }
+
         for (const module of this.modules) {
             module.init && module.init(this.events);
         }
 
         // it's last to allow other modules add their own listeners
         this.events.on('app:error', () => exit(1));
+        this.state.initialized = true;
 
         return this;
     }
 
     async start() {
+        if (this.state.started) {
+            throw new Error('Application has already started.');
+        }
+
         for (const module of this.modules) {
             module.start && await module.start();
         }
+
+        this.state.started = true;
+
         return this;
     }
 
