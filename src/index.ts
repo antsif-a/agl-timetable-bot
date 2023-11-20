@@ -1,4 +1,4 @@
-import { env } from 'node:process';
+import { env, exit } from 'node:process';
 
 import { Application } from '@/Application';
 import Logger from '@/modules/logging/Logger';
@@ -32,8 +32,14 @@ const app = new Application()
     .addModule(Bot.create(TELEGRAM_BOT_TOKEN, VK_USER_ACCESS_TOKEN));
 
 process.on('warning', (warn) => app.events.emit('process:warn', warn));
-process.on('SIGINT', () => app.dispose());
-process.on('SIGTERM', () => app.dispose());
+process.on('SIGINT', async () => {
+    await app.dispose();
+    exit(1);
+});
+process.on('SIGTERM', async () => {
+    await app.dispose();
+    exit(1);
+});
 
 // synchronous calls
 app.init();

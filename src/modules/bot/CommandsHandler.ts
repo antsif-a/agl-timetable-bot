@@ -5,6 +5,7 @@ import { VKApi } from 'node-vk-sdk';
 import TimetableCommand from '@/modules/bot/commands/Timetable';
 import SubscribeCommand from '@/modules/bot/commands/Subscribe';
 import UnsubscribeCommand from '@/modules/bot/commands/Unsubscribe';
+import StartCommand from '@/modules/bot/commands/Start';
 import type { BotCommand } from '@/modules/bot/BotCommand';
 
 export class CommandsHandler {
@@ -16,6 +17,8 @@ export class CommandsHandler {
             new SubscribeCommand(dbClient),
             new UnsubscribeCommand(dbClient),
         ];
+
+        this.commands.push(new StartCommand(this.commands));
     }
 
     async init(bot: GrammyBot) {
