@@ -7,7 +7,7 @@ import type {
     PhotosPhotoSizes,
 } from '@vk';
 
-import { BotCommand } from '@/modules/bot/bot-command';
+import { BotCommand } from '@/modules/bot/BotCommand';
 
 function findLargestPhotoSize(photo: PhotosPhoto) {
     return photo.sizes!

@@ -12,8 +12,8 @@ import type {
     WallWallpostAttachment,
 } from '@vk';
 
-import { ApplicationEvents, ApplicationModule } from '@/application';
-import { CommandsHandler } from '@/modules/bot/commands-handler';
+import { ApplicationEvents, ApplicationModule } from '@/Application';
+import { CommandsHandler } from '@/modules/bot/CommandsHandler';
 
 function findLargestPhotoSize(sizes: PhotosPhotoSizes[]) {
     return sizes

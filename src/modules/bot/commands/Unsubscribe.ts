@@ -1,7 +1,7 @@
 import type { PrismaClient } from '@prisma/client';
 import type { Context } from 'grammy';
 
-import type { BotCommand } from '@/modules/bot/bot-command';
+import type { BotCommand } from '@/modules/bot/BotCommand';
 
 export default class UnsubscribeCommand implements BotCommand {
     command = 'unsubscribe';

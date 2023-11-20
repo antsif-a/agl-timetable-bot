@@ -4,7 +4,7 @@ import type { EventHandler } from '@events';
 import type {
     ApplicationEvents,
     ApplicationModule,
-} from '@/application';
+} from '@/Application';
 
 export default class VKBridge implements ApplicationModule {
     private readonly api: VKApi;

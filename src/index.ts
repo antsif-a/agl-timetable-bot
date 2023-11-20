@@ -1,9 +1,9 @@
 import { env } from 'node:process';
 
-import { Application } from '@/application';
-import Logger from '@/modules/logging/logger';
-import VKBridge from '@/modules/api/vkBridge';
-import Bot from '@/modules/bot/bot';
+import { Application } from '@/Application';
+import Logger from '@/modules/logging/Logger';
+import VKBridge from '@/modules/api/VKBridge';
+import Bot from '@/modules/bot/Bot';
 
 declare global {
     namespace NodeJS {

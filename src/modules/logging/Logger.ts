@@ -2,7 +2,7 @@ import * as util from 'node:util';
 import chalk from 'chalk';
 import type { EventHandler } from '@events';
 
-import { ApplicationEvents, ApplicationModule } from '@/application';
+import type { ApplicationEvents, ApplicationModule } from '@/Application';
 
 export enum LogLevel {
     debug,
@@ -36,9 +36,9 @@ export default class Logger implements ApplicationModule {
         });
 
         events.on('bot:message',
-            ({ text }, { username, first_name, last_name }) => {
+            ({ text }, { username, first_name, last_name, id }) => {
             const fullName = last_name ? `${first_name} ${last_name}` : first_name;
-            this.debug(`Message from ${username} (${fullName}): ${text}`, 'bot');
+            this.debug(`Message from ${username || id} (${fullName}): ${text}`, 'bot');
         });
 
         events.on('vk:start', ({ name, id }) => {
