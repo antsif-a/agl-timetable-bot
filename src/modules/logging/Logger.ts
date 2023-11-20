@@ -35,6 +35,10 @@ export default class Logger implements ApplicationModule {
             );
         });
 
+        events.on('bot:stop', () => {
+           this.info('Stopped bot', 'bot');
+        });
+
         events.on('bot:message',
             ({ text }, { username, first_name, last_name, id }) => {
             const fullName = last_name ? `${first_name} ${last_name}` : first_name;
@@ -45,8 +49,12 @@ export default class Logger implements ApplicationModule {
             this.info(`Started long polling from ${id} (${name}) group`, 'vk');
         });
 
-        events.on('db:start', () => {
-            this.info('Connected to database.', 'db');
+        events.on('db:connect', () => {
+            this.info('Connected to database', 'db');
+        });
+
+        events.on('db:disconnect', () => {
+            this.info('Disconnected from database', 'db');
         });
     }
 

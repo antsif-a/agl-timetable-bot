@@ -2,6 +2,7 @@ import type { Buffer } from 'node:buffer';
 import { exit } from 'node:process';
 import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
+import { run, RunnerHandle } from '@grammyjs/runner';
 import { Bot as GrammyBot, InputFile } from 'grammy';
 import type { UserFromGetMe } from 'grammy/types';
 import { VKApi } from 'node-vk-sdk';
@@ -25,8 +26,12 @@ export default class Bot implements ApplicationModule {
     private readonly bot: GrammyBot;
     private readonly dbClient: PrismaClient;
     private readonly commands: CommandsHandler;
+
     private onStart: (botInfo: UserFromGetMe) => void = () => {};
+    private onStop: () => void = () => {};
     private onDatabaseConnect: () => void = () => {};
+    private onDatabaseDisconnect: () => void = () => {};
+    private botHandle?: RunnerHandle;
 
     private constructor(vkApi: VKApi, telegramToken: string) {
         this.bot = new GrammyBot(telegramToken);
@@ -47,18 +52,25 @@ export default class Bot implements ApplicationModule {
         events.on('bot:error', () => exit(1));
 
         this.bot.catch((error) => events.emit('bot:error', error));
-        this.bot.use((ctx, next) => {
+        this.bot.use(async (ctx, next) => {
             if (ctx.message) {
                 events.emit('bot:message', ctx.message, ctx.message.from!);
             }
-            next();
+
+            await next();
         });
 
         this.onStart =
             (botInfo) => events.emit('bot:start', botInfo);
 
+        this.onStop =
+            () => events.emit('bot:stop');
+
         this.onDatabaseConnect =
-            () => events.emit('db:start');
+            () => events.emit('db:connect');
+
+        this.onDatabaseDisconnect =
+            () => events.emit('db:disconnect');
 
         // send vk post to every user
         events.on('vk:post', async (post) => {
@@ -105,10 +117,17 @@ export default class Bot implements ApplicationModule {
         await this.commands.init(this.bot);
         await this.dbClient.$connect()
             .then(this.onDatabaseConnect);
-        await this.bot.start({ onStart: this.onStart });
+
+        this.botHandle = run(this.bot);
+
+        this.bot.api.getMe()
+            .then(this.onStart);
     }
 
-    dispose() {
-        this.dbClient.$disconnect();
+    async dispose() {
+        this.botHandle?.isRunning() && await this.botHandle?.stop()
+            .then(this.onStop);
+        await this.dbClient.$disconnect()
+            .then(this.onDatabaseDisconnect);
     }
 }

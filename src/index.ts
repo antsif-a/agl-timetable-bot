@@ -32,6 +32,8 @@ const app = new Application()
     .addModule(Bot.create(TELEGRAM_BOT_TOKEN, VK_USER_ACCESS_TOKEN));
 
 process.on('warning', (warn) => app.events.emit('process:warn', warn));
+process.on('SIGINT', () => app.dispose());
+process.on('SIGTERM', () => app.dispose());
 
 // synchronous calls
 app.init();

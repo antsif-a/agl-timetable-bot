@@ -13,11 +13,14 @@ export interface ApplicationEvents extends EventMap {
     ['bot:start']: (botInfo: UserFromGetMe) => void;
     ['bot:error']: (error: BotError) => void;
     ['bot:message']: (message: Message, user: User) => void;
+    ['bot:stop']: () => void;
 
     ['vk:start']: (group: GroupsGroup) => void;
     ['vk:post']: (wallItem: WallWallpostFull) => void;
+    ['vk:stop']: () => void;
 
-    ['db:start']: () => void;
+    ['db:connect']: () => void;
+    ['db:disconnect']: () => void;
 }
 
 export interface ApplicationModule {
@@ -74,7 +77,7 @@ export class Application {
 
     async dispose() {
         for (const module of this.modules) {
-            module.dispose && module.dispose();
+            module.dispose && await module.dispose();
         }
         return this;
     }

@@ -17,6 +17,7 @@
     "gen:types": "./scripts/gen-types.sh"
   },
   "dependencies": {
+    "@grammyjs/runner": "^2.0.3",
     "@prisma/client": "^5.5.2",
     "axios": "^1.6.2",
     "chalk": "4.0.0",
