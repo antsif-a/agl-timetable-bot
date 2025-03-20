@@ -11,10 +11,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "prestart": "tsc",
-    "start": "env $(grep -v '^#' .env | xargs) node --no-warnings -r tsconfig-paths/register ./build/src/index.js",
+    "start": "node --no-warnings -r tsconfig-paths/register ./build/src/index.js",
     "build": "tsc",
-    "gen:types": "./scripts/gen-types.sh"
+    "gen:types": "./scripts/gen-types.sh",
+    "db:deploy": "prisma migrate deploy && prisma generate"
   },
   "dependencies": {
     "@grammyjs/runner": "^2.0.3",

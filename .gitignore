@@ -1,6 +1,8 @@
 .idea
-node_modules
 build
-# generated using gen:types
-lib/vk
 .env
+node_modules
+# gen:types
+lib/vk
+# db:deploy
+prisma/migrations

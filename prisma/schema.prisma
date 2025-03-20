@@ -3,14 +3,15 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Subscriber {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  chatId  Int @unique
+  id      Int @id @default(autoincrement())
+  chatId  BigInt @unique
 }
