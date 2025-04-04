@@ -11,8 +11,8 @@
       "@vk": ["./lib/vk/index"],
       "@events": ["./lib/events"],
     },
-    "alwaysStrict": true,
-    "strict": true
+    "alwaysStrict": false,
+    "strict": false
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
