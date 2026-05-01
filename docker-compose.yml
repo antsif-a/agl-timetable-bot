@@ -9,8 +9,7 @@ networks:
 services:
   db:
     image: postgres:15
-    hostname: postgres_db
-    container_name: postgres_db
+    container_name: agl-timetable-bot-db
     restart: always
     environment:
       - POSTGRES_DB=postgres
